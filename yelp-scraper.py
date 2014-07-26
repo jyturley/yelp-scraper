@@ -1,7 +1,8 @@
-#!/user/bin/python
-import beautifulsoup
+#/user/bin/python
+import bs4
 import sys
 import os
+import argparse
 
 def main():
     assert(len(sys.argv) == 1)
