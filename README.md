@@ -6,7 +6,7 @@ Have you ever wondered what the funniest Yelp review ever written was? Or the co
 
 Python 2.7 is required. Install dependencies with:
 
- pip install -r requirements.tt
+    pip install -r requirements.tt
 
 ## Step 1: scrape Yelp.com reviews from every restaurant.
 
