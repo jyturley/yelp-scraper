@@ -14,5 +14,5 @@ There are two ways to go about finding the funniest yelp review. Scraping review
 
 The first step in this approach is to gather a large list of users (Ideally, every user on yelp that has written a review, but for the purposes of this experiment, I'll limit myself to all users in the Bay Area). This can be done by a simple BFS web crawl of any yelp-user page and the pages of his or her friend:
 
-    python get_yelp_users
+    python get_yelp_users <random user's yelp page>
 
