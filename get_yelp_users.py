@@ -29,9 +29,9 @@ def get_yelp_users(seen_users, users_to_visit):
 			continue
 
 		seen_users.add(user)
-		add_user_friends_to_list(user, users_to_visit)
 		if len(seen_users) > MAX_USERS:
 			break;
+		add_user_friends_to_list(user, users_to_visit)
 	return seen_users
 
 def main():
