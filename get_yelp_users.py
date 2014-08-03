@@ -19,8 +19,21 @@ def is_valid_yelp_user_review_page(html):
 def is_valid_yelp_user_friends_page(html):
 	return True if "Friends" in html.body.h3.text else False
 
-def add_user_friends_to_list(user, users_to_visit):
-	pass
+def add_user_friends_to_list(user_id_query, users_to_visit):
+	html = BeautifulSoup(urlopen('http://www.yelp.com/user_details_friends?%s' % user_id_query))
+	assert(is_valid_yelp_user_friends_page(html))
+	# num_user_friends = html.find(class_='range-of-total')
+	for friend in html.find_all('div', class_='friend_box'):
+		try:
+			friend_location = friend.find(class_'user-location').text
+			if friend_location is not "San Francisco, CA":
+				print friend_location
+				return
+			friend_url = urlparse(friend.find(class_='photo-box pb-ss').a.get('href'))
+			users_to_visit.append(friend_url)
+
+		except:
+			print "Something went wrong with %s" % friend
 
 def get_yelp_users(seen_users, users_to_visit):
 	while users_to_visit:
@@ -48,10 +61,6 @@ def main():
 
 	users_to_visit.append(url.query)
 	get_yelp_users(seen_users, users_to_visit)
-
-	# user_page_html = BeautifulSoup(urlopen(sys.argv[1]))
-	# assert(is_valid_yelp_user_review_page(user_page_html))
-
 
 if __name__ == "__main__":
 	main()
