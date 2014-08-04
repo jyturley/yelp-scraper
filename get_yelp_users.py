@@ -25,12 +25,11 @@ def add_user_friends_to_list(user_id_query, users_to_visit):
 	# num_user_friends = html.find(class_='range-of-total')
 	for friend in html.find_all('div', class_='friend_box'):
 		try:
-			friend_location = friend.find(class_'user-location').text
-			if friend_location is not "San Francisco, CA":
-				print friend_location
-				return
+			friend_location = friend.find(class_='user-location').text
+			if friend_location != "San Francisco, CA":
+				continue
 			friend_url = urlparse(friend.find(class_='photo-box pb-ss').a.get('href'))
-			users_to_visit.append(friend_url)
+			users_to_visit.append(friend_url.query)
 
 		except:
 			print "Something went wrong with %s" % friend
@@ -42,6 +41,8 @@ def get_yelp_users(seen_users, users_to_visit):
 			continue
 
 		seen_users.add(user)
+		print "Getting friends for user: %s" % user
+		print "# seen: %d\t# to visit: %d" % (len(seen_users), len(users_to_visit))
 		if len(seen_users) > MAX_USERS:
 			break;
 		add_user_friends_to_list(user, users_to_visit)
@@ -56,6 +57,7 @@ def main():
 	assert("www.yelp.com" in url.netloc)
 
 	if "friends" not in url.path:
+		print "moving to friends page"
 		query = url.query
 		url = urlparse("http://www.yelp.com/user_details_friends?%s" % query)
 
