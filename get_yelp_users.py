@@ -21,12 +21,10 @@ def is_valid_yelp_user_friends_page(html):
 	return True if "Friends" in html.body.h3.text else False
 
 def scrape_reviews_to_file(user_soup, file):
-	with open(file, 'wb') as f: #this handle is created every single time, make it so that it only creates this once.
-		fieldnames = ('user_id', 'funny', 'cool', 'useful', 'restaurant', 'review')
-		writer = csv.DictWriter(f, fieldnames=fieldnames)
-		headers = dict((n,n) for n in fieldnames)
-		writer.writerow(headers)
-	pass
+	fieldnames = ('user_id', 'funny', 'cool', 'useful', 'restaurant', 'review')
+	writer = csv.DictWriter(f, fieldnames=fieldnames)
+	headers = dict((n,n) for n in fieldnames)
+	writer.writerow(headers)
 
 def add_user_friends_to_list(user_soup, users_to_visit):
 	assert(is_valid_yelp_user_friends_page(user_soup))
