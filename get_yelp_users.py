@@ -22,7 +22,7 @@ def is_valid_yelp_user_friends_page(html):
 
 def scrape_reviews_to_file(user_soup, file):
 	fieldnames = ('user_id', 'funny', 'cool', 'useful', 'restaurant', 'review')
-	writer = csv.DictWriter(f, fieldnames=fieldnames)
+	writer = csv.DictWriter(file, fieldnames=fieldnames)
 	headers = dict((n,n) for n in fieldnames)
 	writer.writerow(headers)
 
