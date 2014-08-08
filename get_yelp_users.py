@@ -36,7 +36,6 @@ def add_user_friends_to_list(user_soup, users_to_visit):
 				continue
 			friend_url = urlparse(friend.find(class_='photo-box pb-ss').a.get('href'))
 			users_to_visit.append(friend_url.query)
-
 		except:
 			print "Something went wrong with %s" % friend
 
