@@ -17,3 +17,5 @@ The first step in this approach is to gather a large list of users (Ideally, eve
     python get_yelp_reviews <random user's yelp page>
 
 The above command will spit out a csv file of the metatdat for each review.
+
+
