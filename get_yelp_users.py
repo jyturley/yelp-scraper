@@ -14,7 +14,6 @@ def is_valid_yelp_user_review_page(html):
 		return False
 	if "All Reviews" not in html.body.h3.text:
 		return False
-
 	return True
 
 def is_valid_yelp_user_friends_page(html):
