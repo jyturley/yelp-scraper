@@ -7,6 +7,7 @@ import os
 import csv
 
 MAX_USERS = 1000
+FIELD_NAMES = ('user_id', 'funny', 'cool', 'useful', 'restaurant', 'review')
 
 # Make sure the page is a yelp user page in the reviews tab.
 def is_valid_yelp_user_review_page(html):
@@ -19,11 +20,13 @@ def is_valid_yelp_user_review_page(html):
 def is_valid_yelp_user_friends_page(html):
 	return True if "Friends" in html.body.h3.text else False
 
-def scrape_reviews_to_file(user_soup, file):
-	fieldnames = ('user_id', 'funny', 'cool', 'useful', 'restaurant', 'review')
-	writer = csv.DictWriter(file, fieldnames=fieldnames)
-	headers = dict((n,n) for n in fieldnames)
+def write_csv_header(file):
+	writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
+	headers = dict((n,n) for n in FIELD_NAMES)
 	writer.writerow(headers)
+
+def scrape_reviews_to_file(user_soup, file):
+	pass
 
 def add_user_friends_to_list(user_soup, users_to_visit):
 	assert(is_valid_yelp_user_friends_page(user_soup))
@@ -40,6 +43,8 @@ def add_user_friends_to_list(user_soup, users_to_visit):
 
 def get_yelp_users(seen_users, users_to_visit, csv_file):
 	f = open(csv_file, 'wb')
+	write_csv_header(f)
+	return
 	while users_to_visit:
 		user = users_to_visit.pop()
 		if user in seen_users:
