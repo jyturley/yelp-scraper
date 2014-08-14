@@ -18,3 +18,4 @@ The first step in this approach is to gather a large list of users (Ideally, eve
 
 The above command will spit out a csv file of the metatdat for each review.
 
+
