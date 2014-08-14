@@ -43,7 +43,6 @@ def scrape_reviews_to_file(user_id, file):
 		review_soup = BeautifulSoup(urlopen('http://www.yelp.com/user_details_reviews_self'
 			'?%s&review_sort=funny&rec_pagestart=%d' % (user_id, page_start)))
 
-
 def add_user_friends_to_list(user_id, users_to_visit):
 	user_soup = BeautifulSoup(urlopen('http://www.yelp.com/user_details_friends?%s' % user_id))
 	assert(is_valid_yelp_user_friends_page(user_soup))
