@@ -20,15 +20,32 @@ def is_valid_yelp_user_review_page(html):
 def is_valid_yelp_user_friends_page(html):
 	return True if "Friends" in html.body.h3.text else False
 
+def has_next_page_of_reviews(soup):
+	return soup.find('div', id='empty_reviews') is not None
+
+def scrape_reviews_of_current_page(review_soup, file):
+	pass
+
 def write_csv_header(file):
 	writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
 	headers = dict((n,n) for n in FIELD_NAMES)
 	writer.writerow(headers)
 
-def scrape_reviews_to_file(user_soup, file):
-	pass
+def scrape_reviews_to_file(user_id, file):
+	# Maybe apply review sort by sf here
+	review_soup = BeautifulSoup(urlopen('http://www.yelp.com/user_details_reviews_self?%s&review_sort=funny' % user_id))
+	assert(is_valid_yelp_user_review_page(review_soup))
+	page_start = 0
+	has_next_page_of_reviews = review_soup.find(id='review_lister_header')
+	while has_next_page_of_reviews(review_soup):
+		scrape_reviews_of_current_page(review_soup, file)
+		page_start += 10
+		review_soup = BeautifulSoup(urlopen('http://www.yelp.com/user_details_reviews_self'
+			'?%s&review_sort=funny&rec_pagestart=%d' % (user_id, page_start)))
 
-def add_user_friends_to_list(user_soup, users_to_visit):
+
+def add_user_friends_to_list(user_id, users_to_visit):
+	user_soup = BeautifulSoup(urlopen('http://www.yelp.com/user_details_friends?%s' % user_id))
 	assert(is_valid_yelp_user_friends_page(user_soup))
 	# num_user_friends = user_soup.find(class_='range-of-total')
 	for friend in user_soup.find_all('div', class_='friend_box'):
@@ -55,9 +72,8 @@ def get_yelp_users(seen_users, users_to_visit, csv_file):
 		print "# seen: %d\t# to visit: %d" % (len(seen_users), len(users_to_visit))
 		if len(seen_users) > MAX_USERS:
 			break;
-		user_soup = BeautifulSoup(urlopen('http://www.yelp.com/user_details_friends?%s' % user))
-		scrape_reviews_to_file(user_soup, f)
-		add_user_friends_to_list(user_soup, users_to_visit)
+		scrape_reviews_to_file(user, f)
+		add_user_friends_to_list(user, users_to_visit)
 	f.close()
 	return seen_users
 
