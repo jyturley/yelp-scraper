@@ -47,7 +47,6 @@ def scrape_reviews_of_current_page(review_soup, dict_writer, user_id):
 			 "review":review})
 
 	return True
-
 def write_csv_header(file):
 	writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
 	headers = dict((n,n) for n in FIELD_NAMES)
@@ -113,8 +112,10 @@ def main():
 		print "moving to friends page"
 		query = url.query
 		url = urlparse("http://www.yelp.com/user_details_friends?%s" % query)
-
-	users_to_visit.append(url.query)
+	user = url.query
+	if "&" in user:
+		user = url.query.split('&')
+	users_to_visit.append(user)
 	get_yelp_users(seen_users, users_to_visit, csv)
 
 if __name__ == "__main__":
