@@ -57,8 +57,8 @@ def scrape_reviews_to_file(user_id, dict_writer):
 	review_soup = BeautifulSoup(urlopen('http://www.yelp.com/user_details_reviews_self?%s&review_sort=funny' % user_id))
 	assert(is_valid_yelp_user_review_page(review_soup))
 	page_start = 0
-	has_next_page_of_reviews = review_soup.find(id='review_lister_header')
 	while has_next_page_of_reviews(review_soup):
+		print "Scraping Reviews To File"
 		if not scrape_reviews_of_current_page(review_soup, dict_writer, user_id):
 			break
 		page_start += 10
@@ -114,7 +114,7 @@ def main():
 		url = urlparse("http://www.yelp.com/user_details_friends?%s" % query)
 	user = url.query
 	if "&" in user:
-		user = url.query.split('&')
+		user = url.query.split('&')[0]
 	users_to_visit.append(user)
 	get_yelp_users(seen_users, users_to_visit, csv)
 
