@@ -25,13 +25,11 @@ def has_next_page_of_reviews(soup):
 
 def scrape_reviews_of_current_page(review_soup, dict_writer, user_id):
 	print "scraping reviews for %s" % user_id
-	print len(review_soup.find_all('div', class_='review clearfix'))
 	for review in review_soup.find_all('div', class_='review clearfix'):
 		ufc_soup = review.find_all('span', class_='count')
-		useful = int(ufc_soup[0].text)
-		funny  = int(ufc_soup[1].text)
-		cool   = int(ufc_soup[2].text)
-		print ufc_soup
+		useful = int(ufc_soup[0].text if ufc_soup[0].text else 0)
+		funny  = int(ufc_soup[1].text if ufc_soup[1].text else 0)
+		cool   = int(ufc_soup[2].text if ufc_soup[2].text else 0)
 		if not funny:
 			return False
 
@@ -39,17 +37,16 @@ def scrape_reviews_of_current_page(review_soup, dict_writer, user_id):
 		if comment.startswith('\n                '):
 			comment = review.text[17:]
 
-		print comment[:10]
-
+		print comment
 		restaurant = review.find('div', class_='biz_info').h4.a.text
 
-		dict_writer.write(
+		dict_writer.writerow(
 			{"user_id": user_id,
 			 "funny":funny,
 			 "cool":cool,
 			 "useful":useful,
 			 "restaurant":restaurant,
-			 "review":review})
+			 "review":comment})
 
 	return True
 def write_csv_header(file):
