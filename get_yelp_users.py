@@ -21,20 +21,25 @@ def is_valid_yelp_user_friends_page(html):
 	return True if "Friends" in html.body.h3.text else False
 
 def has_next_page_of_reviews(soup):
-	return soup.find('div', id='empty_reviews') is not None
+	return soup.find('div', id='empty_reviews') is None
 
 def scrape_reviews_of_current_page(review_soup, dict_writer, user_id):
+	print "scraping reviews for %s" % user_id
+	print len(review_soup.find_all('div', class_='review clearfix'))
 	for review in review_soup.find_all('div', class_='review clearfix'):
 		ufc_soup = review.find_all('span', class_='count')
 		useful = int(ufc_soup[0].text)
 		funny  = int(ufc_soup[1].text)
 		cool   = int(ufc_soup[2].text)
+		print ufc_soup
 		if not funny:
 			return False
 
 		comment = review.find('div', class_='review_comment').text
 		if comment.startswith('\n                '):
 			comment = review.text[17:]
+
+		print comment[:10]
 
 		restaurant = review.find('div', class_='biz_info').h4.a.text
 
@@ -58,7 +63,6 @@ def scrape_reviews_to_file(user_id, dict_writer):
 	assert(is_valid_yelp_user_review_page(review_soup))
 	page_start = 0
 	while has_next_page_of_reviews(review_soup):
-		print "Scraping Reviews To File"
 		if not scrape_reviews_of_current_page(review_soup, dict_writer, user_id):
 			break
 		page_start += 10
