@@ -5,9 +5,17 @@ from urlparse import urlparse
 import sys
 import os
 import csv
+import random
+import time
 
-MAX_USERS = 1000
+MAX_USERS = 5000
 FIELD_NAMES = ('user_id', 'funny', 'cool', 'useful', 'restaurant', 'review')
+REQUEST_INTERVAL_SECONDS_MIN = 2.0
+REQUEST_INTERVAL_SECONDS_MAX = 5.0
+
+def open_url(url):
+	time.sleep(random.uniform(REQUEST_INTERVAL_SECONDS_MIN, REQUEST_INTERVAL_SECONDS_MIN))
+	return BeautifulSoup(urlopen(url))
 
 # Make sure the page is a yelp user page in the reviews tab.
 def is_valid_yelp_user_review_page(html):
@@ -31,7 +39,6 @@ def trim_comment(comment):
 			return comment
 
 def scrape_reviews_of_current_page(review_soup, dict_writer, user_id):
-	print "scraping reviews for %s" % user_id
 	for review in review_soup.find_all('div', class_='review clearfix'):
 		ufc_soup = review.find_all('span', class_='count')
 		useful = int(ufc_soup[0].text if ufc_soup[0].text else 0)
@@ -59,18 +66,20 @@ def write_csv_header(file):
 
 def scrape_reviews_to_file(user_id, dict_writer):
 	# Maybe apply review sort by sf here
-	review_soup = BeautifulSoup(urlopen('http://www.yelp.com/user_details_reviews_self?%s&review_sort=funny' % user_id))
+	review_soup = open_url('http://www.yelp.com/user_details_reviews_self?%s&review_sort=funny' % user_id)
 	assert(is_valid_yelp_user_review_page(review_soup))
 	page_start = 0
 	while has_next_page_of_reviews(review_soup):
 		if not scrape_reviews_of_current_page(review_soup, dict_writer, user_id):
 			break
 		page_start += 10
-		review_soup = BeautifulSoup(urlopen('http://www.yelp.com/user_details_reviews_self'
-			'?%s&review_sort=funny&rec_pagestart=%d' % (user_id, page_start)))
+		review_soup = open_url('http://www.yelp.com/user_details_reviews_self'
+			'?%s&review_sort=funny&rec_pagestart=%d' % (user_id, page_start))
 
 def add_user_friends_to_list(user_id, users_to_visit):
-	user_soup = BeautifulSoup(urlopen('http://www.yelp.com/user_details_friends?%s' % user_id))
+	if len(users_to_visit) > MAX_USERS:
+		return
+	user_soup = open_url('http://www.yelp.com/user_details_friends?%s' % user_id)
 	assert(is_valid_yelp_user_friends_page(user_soup))
 	# num_user_friends = user_soup.find(class_='range-of-total')
 	for friend in user_soup.find_all('div', class_='friend_box'):
@@ -85,7 +94,6 @@ def add_user_friends_to_list(user_id, users_to_visit):
 
 def get_yelp_users(seen_users, users_to_visit, csv_file):
 	f = open(csv_file, 'wb')
-	# write_csv_header(f)
 	writer = csv.DictWriter(f, fieldnames=FIELD_NAMES, delimiter='|')
 	writer.writeheader()
 	while users_to_visit:
