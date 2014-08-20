@@ -23,6 +23,13 @@ def is_valid_yelp_user_friends_page(html):
 def has_next_page_of_reviews(soup):
 	return soup.find('div', id='empty_reviews') is None
 
+def trim_comment(comment):
+	if comment.startswith('\n                '):
+		comment = comment[17:]
+		if comment.endswith('\n            '):
+			comment = comment[-13:]
+			return comment
+
 def scrape_reviews_of_current_page(review_soup, dict_writer, user_id):
 	print "scraping reviews for %s" % user_id
 	for review in review_soup.find_all('div', class_='review clearfix'):
@@ -33,12 +40,8 @@ def scrape_reviews_of_current_page(review_soup, dict_writer, user_id):
 		if not funny:
 			return False
 
-		comment = review.find('div', class_='review_comment').text
-		if comment.startswith('\n                '):
-			comment = review.text[17:]
-
-		print comment
-		restaurant = review.find('div', class_='biz_info').h4.a.text
+		comment = review.find('div', class_='review_comment').text.encode('utf-8')
+		restaurant = review.find('div', class_='biz_info').h4.a.text.encode('utf-8')
 
 		dict_writer.writerow(
 			{"user_id": user_id,
@@ -46,7 +49,7 @@ def scrape_reviews_of_current_page(review_soup, dict_writer, user_id):
 			 "cool":cool,
 			 "useful":useful,
 			 "restaurant":restaurant,
-			 "review":comment})
+			 "review":comment.strip()})
 
 	return True
 def write_csv_header(file):
@@ -83,7 +86,7 @@ def add_user_friends_to_list(user_id, users_to_visit):
 def get_yelp_users(seen_users, users_to_visit, csv_file):
 	f = open(csv_file, 'wb')
 	# write_csv_header(f)
-	writer = csv.DictWriter(f, fieldnames=FIELD_NAMES)
+	writer = csv.DictWriter(f, fieldnames=FIELD_NAMES, delimiter='|')
 	writer.writeheader()
 	while users_to_visit:
 		user = users_to_visit.pop()
