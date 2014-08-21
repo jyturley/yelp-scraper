@@ -65,6 +65,7 @@ def scrape_reviews_of_current_page(review_soup, dict_writer, user_id):
 			 "review": comment.strip()})
 
 	return True
+	
 def write_csv_header(file):
 	writer = csv.DictWriter(file, fieldnames=FIELD_NAMES)
 	headers = dict((n,n) for n in FIELD_NAMES)
