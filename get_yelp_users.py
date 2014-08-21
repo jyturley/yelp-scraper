@@ -1,7 +1,7 @@
 #/usr/bin/python
 from bs4 import BeautifulSoup
-from urllib import urlopen
 from urlparse import urlparse
+import urllib
 import sys
 import os
 import csv
@@ -13,9 +13,15 @@ FIELD_NAMES = ('user_id', 'funny', 'cool', 'useful', 'restaurant', 'review')
 REQUEST_INTERVAL_SECONDS_MIN = 2.0
 REQUEST_INTERVAL_SECONDS_MAX = 5.0
 
+class YelpURLOpener(urllib.FancyURLopener):
+	version = "student/learning-to-webscrape"
+
+def setup_url_opener():
+	urllib._urlopener = YelpURLOpener()
+
 def open_url(url):
 	time.sleep(random.uniform(REQUEST_INTERVAL_SECONDS_MIN, REQUEST_INTERVAL_SECONDS_MIN))
-	return BeautifulSoup(urlopen(url))
+	return BeautifulSoup(urllib.urlopen(url))
 
 # Make sure the page is a yelp user page in the reviews tab.
 def is_valid_yelp_user_review_page(html):
@@ -119,6 +125,8 @@ def main():
 	users_to_visit = []
 
 	assert("www.yelp.com" in url.netloc)
+
+	setup_url_opener()
 
 	if "friends" not in url.path:
 		print "moving to friends page"
