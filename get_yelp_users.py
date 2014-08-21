@@ -58,11 +58,11 @@ def scrape_reviews_of_current_page(review_soup, dict_writer, user_id):
 
 		dict_writer.writerow(
 			{"user_id": user_id,
-			 "funny":funny,
-			 "cool":cool,
-			 "useful":useful,
-			 "restaurant":restaurant,
-			 "review":comment.strip()})
+			 "funny": funny,
+			 "cool": cool,
+			 "useful": useful,
+			 "restaurant": restaurant,
+			 "review": comment.strip()})
 
 	return True
 def write_csv_header(file):
